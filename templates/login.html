@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>{{page_title}}</h1>
+
+    <form action="/login" method="post">
+        <table>
+            <tbody>
+                <tr>
+                    <tel>
+                        <label for="email">Email</label>
+                    </tel>
+                    <te>
+                        <input name="email"type="email" value="{{ email }}"/>
+                    </te>
+                </tr><br>
+                <tr>
+                    <tel>
+                        <label for="password">Password</label>
+                    </tel>
+                    <te>
+                        <input name="password"type="password"/>
+                    </te>
+                </tr><br>
+            </tbody>
+        </table>
+        <input type="submit" value="Submit"/>
+    </form>
+    
+{% endblock %}

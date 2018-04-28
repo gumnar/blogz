@@ -1,0 +1,48 @@
+<!Doctype html>
+<html>
+    <head>
+        <title>Blogz</title>
+        <style type="text/css">
+            .body_error {
+                color: red;
+            }
+            .title_error {
+                color:red;
+            }
+            h1 {
+                text-align: center;
+            }
+            form div{
+                margin: 1.5em;
+            }
+            a{
+                color: fuchsia;
+            }
+        </style>
+    </head>
+    <body>
+        <div style='float: right'>
+            {% if 'user' in session %}
+              {{ session['user'] }}
+              <form action="/logout" method="post" id='logout'>
+                <input type="submit" value="Log Out" />
+              </form>
+            {% else %}
+              <a href="login">login</a> | <a href="register">register</a>
+            {% endif %}
+          </div>
+
+          {% with messages = get_flashed_messages() %}
+            {% if messaages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li>{{message}}</li>
+                    {% endfor %}
+                </ul>
+
+
+        {% block content %} 
+        {% endblock %}
+
+    </body>
+</html>

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{page_title}}</h1>
+
+    {% if blogs|length == 0 %}
+    <p>Nothing here yet!</p>
+
+    {% else %}
+        {% for post in blogs %}
+        <form>
+            {% if page_title != post.title %}
+            <h2><a href="/blog?blog_id={{post.id}}">{{post.title}}</a></h2>
+            <input type='hidden'value='{{post.id}}'name='blog_id'/>
+            {% endif %}
+        </form>
+
+        <p> {{post.body}} </p>
+        <hr/>
+
+        {% endfor %}
+
+    {% endif %}
+
+{% endblock %}

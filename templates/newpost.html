@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{page_title}}</h1>
+    <form action='/newpost'method='post'>
+        
+        <div>
+            <label for="blog_title">Title:</label>
+            <br/>
+            <input name="blog_title"type="textarea"size='30'/>
+            <br/>
+            {% with messages = get_flashed_messages(with_categories=True) %}
+            <ul>
+                {% for category, message in messages %}
+                    {% if category == 'title_error' %}
+                        <li class="{{category}}">{{message}}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endwith %}
+        </div>
+
+
+        <div>
+            <label for="blog_body">Blog Body:</label>
+            <br/>
+            <textarea name="blog_body"rows="8"cols="35"maxlength="{{blog_body_chars}}"size="{{blog_body_chars}}"></textarea>
+            <br/>
+            {% with messages = get_flashed_messages(with_categories=True) %}
+            <ul>
+                {% for category, message in messages %}
+                    {% if category == 'body_error' %}
+                        <li class="{{category}}">{{message}}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endwith %}
+        </div>
+
+        <div>
+            <input type='submit'value='Submit'/>
+        </div>
+
+    </form>
+{% endblock %}
