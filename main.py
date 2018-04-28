@@ -35,10 +35,83 @@ class User(db.Model):
         self.password = password
 
 
+def is_email(string):
+    atsign_index = string.find('@')
+    atsign_present = atsign_index >= 0
+    if not atsign_present:
+        return False
+    else:
+        domain_dot_index = string.find('.', atsign_index)
+        domain_dot_present = domain_dot_index >= 0
+        return domain_dot_present
+
+
+endpoints_without_login = ['signup', 'login']
+
+@app.before_request
+def require_login():
+    if not ('user' in session or request.endpoint in endpoints_without_login):
+        return redirect("/signup")
+
+
+@app.route("/signup", methods=["POST", "GET"])
+def signup():
+    if request.method == "GET":
+        return render_template('signup.html', page_title='Sign Up!')
+    
+    elif request.method == "POST":
+        email = request.form['email']
+        password = request.form['password']
+        verify = request.form['verify']
+
+        if is_email(email):
+            existing_user = User.query.filter_by(email=email).first()
+            if not existing_user and password == verify:
+                new_user = User(email, password)
+                db.session.add(new_user)
+                db.session.commit()
+                session['user'] = email
+                flash('Hello, '+session['user'])
+                return redirect('/')
+        else:
+            flash('You must enter a valid email')
+            return redirect('/signup')
+
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    if request.method == "GET":
+        return render_template('login.html', page_title='Log In!')
+    
+    elif request.method == "POST":
+        email = request.form['email']
+        password = request.form['password']
+        user = User.query.filter_by(email=email).first()
+
+        if user and user.password == password:
+            session['user'] = email
+            flash("Welcome back "+session['user'])
+            return redirect('/')
+        else:
+            flash('Username/password combination invalid, please try again', 'error')
+            return redirect('/login')
+
+
+@app.route("/logout", methods=['POST'])
+def logout():
+    del session['user']
+    flash("Logged Out")
+    return redirect('/')
+
+
 #Shows all blog posts
 @app.route("/blog", methods=["POST","GET"])
 def blog():
 
+    owner = User.query.filter_by(email=session['user']).first()
+    blogs = Blog.query.filter_by(owner=owner).all()
+
+    #Fairly certain this is redundant and needs removal
     if request.method == "POST":
         blog_title = request.form['blog_title']
         blog_body = request.form['blog_body']
@@ -47,7 +120,6 @@ def blog():
         db.session.add(new_blog)
         db.session.commit()
 
-    blogs = Blog.query.all()
 
     blog_id = request.args.get('blog_id')
     if blog_id:
@@ -64,6 +136,8 @@ def newpost():
     if request.method == "POST":
         title = request.form['blog_title']
         body = request.form['blog_body']
+        
+        owner = User.query.filter_by(email=session['user']).first()
 
         #Validate input data
         if title == '' or title == ' ':
@@ -74,12 +148,12 @@ def newpost():
             return redirect('/newpost')
             
         #Create and save Blog object to DB
-        new_blog = Blog(title, body)
+        new_blog = Blog(title, body, owner)
         db.session.add(new_blog)
         db.session.commit()
 
         #Once post is completed route to that blog's screen
-        blogs = Blog.query.all()
+        blogs = Blog.query.filter_by(owner=owner).all()
         new_blog_id = len(blogs)
 
         return redirect('/blog?blog_id='+str(new_blog_id))
@@ -89,6 +163,9 @@ def newpost():
 
 @app.route("/", methods=["POST","GET"])
 def index():
+    #If signed in then route to blog and display blogs for user in session
+
+
     return redirect('/blog')
 
 
