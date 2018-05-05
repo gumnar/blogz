@@ -3,7 +3,40 @@
     <head>
         <title>Blogz</title>
 
-        <link type="text/css" rel="stylesheet" href="stylesheet.css">
+        <!--Will not link properly-->
+        <!--<link type="text/css" rel="stylesheet" href="/css/stylesheet.css">-->
+
+        <style type="text/css">
+            .body_error {
+                color: red;
+            }
+            .title_error {
+                color:red;
+            }
+            .error{
+                color: red;
+            }
+            .post-author{
+                font-size: .75em;
+            }
+            .app-content{
+                padding-left: 10%;
+                padding-right: 10%;
+            }
+            h1 {
+                text-align: center;
+            }
+            form div{
+                margin: 1.5em;
+            }
+            a{
+                color: fuchsia;
+            }
+            body{
+            }
+            html{
+            }
+        </style>
 
     </head>
     <body>
@@ -34,8 +67,10 @@
             {% endif %}
         {% endwith %}
 
+        <div class='app-content'>
         {% block content %} 
         {% endblock %}
+        </div>
 
     </body>
 </html>
