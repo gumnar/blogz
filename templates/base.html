@@ -2,46 +2,25 @@
 <html>
     <head>
         <title>Blogz</title>
-        <style type="text/css">
-            .body_error {
-                color: red;
-            }
-            .title_error {
-                color:red;
-            }
-            .error{
-                color: red;
-            }
-            h1 {
-                text-align: center;
-            }
-            form div{
-                margin: 1.5em;
-            }
-            a{
-                color: fuchsia;
-            }
-        </style>
+
+        <link type="text/css" rel="stylesheet" href="stylesheet.css">
+
     </head>
     <body>
         <div stlyle='float: left'>
+            <a href="/">Home</a> | <a href="/blog">All Posts</a> | 
             {% if 'user' in session %}
-            <form action='/blog' method='get'>
-                <input type='submit' value='My Blogs'/>
-            </form>
-            <form action="/newpost" method='get'>
-                <input type='submit' value='New Blog'/>
-            </form>
+                <a href="/newpost">New Post</a> | 
             {% endif %}
         </div>
         <div style='float: right'>
             {% if 'user' in session %}
-              {{ session['user'] }}
-              <form action="/logout" method="post" id='logout'>
-                <input type="submit" value="Log Out" />
-              </form>
+                {{ session['user'] }}
+                <form action="/logout" method="post" id='logout'>
+                    <input type="submit" value="Log Out" />
+                </form>
             {% else %}
-              <a href="/login">login</a> | <a href="/signup">register</a>
+                <a href="/login">login</a> | <a href="/signup">register</a>
             {% endif %}
           </div>
 

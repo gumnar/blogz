@@ -46,12 +46,12 @@ def is_email(string):
         return domain_dot_present
 
 
-endpoints_without_login = ['signup', 'login']
+#endpoints_without_login = ['signup', 'login', 'blog', '/']
 
-@app.before_request
-def require_login():
-    if not ('user' in session or request.endpoint in endpoints_without_login):
-        return redirect("/signup")
+#@app.before_request
+#def require_login():
+#    if not ('user' in session or request.endpoint in endpoints_without_login):
+#        return redirect("/signup")
 
 
 @app.route("/signup", methods=["POST", "GET"])
@@ -72,7 +72,7 @@ def signup():
                 db.session.commit()
                 session['user'] = email
                 flash('Hello, '+session['user'])
-                return redirect('/')
+                return redirect('/blog')
         else:
             flash('You must enter a valid email')
             return redirect('/signup')
@@ -91,7 +91,7 @@ def login():
         if user and user.password == password:
             session['user'] = email
             flash("Welcome back "+session['user'])
-            return redirect('/')
+            return redirect('/blog')
         else:
             flash('Username/password combination invalid, please try again', 'error')
             return redirect('/login')
@@ -101,32 +101,31 @@ def login():
 def logout():
     del session['user']
     flash("Logged Out")
-    return redirect('/')
+    return redirect('/blog')
 
 
 #Shows all blog posts
 @app.route("/blog", methods=["POST","GET"])
 def blog():
 
-    owner = User.query.filter_by(email=session['user']).first()
-    blogs = Blog.query.filter_by(owner=owner).all()
+    if request.method == 'GET':
+        user_id = request.args.get('userId')
+        if user_id:
+            owners = User.query.filter_by(id=int(user_id)).all()
+            blogs = Blog.query.filter_by(owner_id=owners[0].id).all()
+            return render_template('blog.html', blogs=blogs, page_title = owners[0].email, authors = owners)
 
-    #Fairly certain this is redundant and needs removal
-    if request.method == "POST":
-        blog_title = request.form['blog_title']
-        blog_body = request.form['blog_body']
+        blog_id = request.args.get('blog_id')
+        if blog_id:
+            blogs = Blog.query.filter_by(id=int(blog_id)).all()
+            authors = User.query.all()
 
-        new_blog = Blog(blog_title, blog_body)
-        db.session.add(new_blog)
-        db.session.commit()
+            return render_template('blog.html', blogs = blogs, page_title = blogs[0].title, authors = authors)
 
+        else:
+            return render_template('blog.html', blogs = Blog.query.all(), page_title='All Posts', authors = User.query.all())
+        
 
-    blog_id = request.args.get('blog_id')
-    if blog_id:
-        blogs = Blog.query.filter_by(id=int(blog_id)).all()
-        return render_template('blog.html', blogs = blogs, page_title = blogs[0].title)
-
-    return render_template('blog.html', blogs = blogs, page_title='Build a Blog')
 
 
 #Allows user to make new blogpost   
@@ -154,7 +153,8 @@ def newpost():
 
         #Once post is completed route to that blog's screen
         blogs = Blog.query.filter_by(owner=owner).all()
-        new_blog_id = len(blogs)
+        all_blogs = Blog.query.all()
+        new_blog_id = len(all_blogs)
 
         return redirect('/blog?blog_id='+str(new_blog_id))
     
@@ -164,9 +164,11 @@ def newpost():
 @app.route("/", methods=["POST","GET"])
 def index():
     #If signed in then route to blog and display blogs for user in session
+    if request.method == 'GET':
+        users = User.query.all()
+        return render_template('index.html',users=users, page_title='All Users')
 
-
-    return redirect('/blog')
+    return redirect('/index')
 
 
 if __name__ == '__main__':

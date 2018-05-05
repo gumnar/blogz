@@ -1,0 +1,21 @@
+.body_error {
+    color: red;
+}
+.title_error {
+    color:red;
+}
+.error{
+    color: red;
+}
+.post-author{
+    font-size: .75em;
+}
+h1 {
+    text-align: center;
+}
+form div{
+    margin: 1.5em;
+}
+a{
+    color: fuchsia;
+}

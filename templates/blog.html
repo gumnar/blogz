@@ -3,6 +3,8 @@
 {% block content %}
     <h1>{{page_title}}</h1>
 
+    <hr/>
+
     {% if blogs|length == 0 %}
     <p>Nothing here yet!</p>
 
@@ -16,8 +18,18 @@
         </form>
 
         <p> {{post.body}} </p>
-        <hr/>
 
+            {% if authors|length == 1 %}
+                <p class='post-author'><i>written by <a href='/blog?userId={{authors[0].id}}'>{{authors[0].email}}</a></i></p>
+                <hr/>
+            {% else %}
+                {% for author in authors %}
+                    {% if post.owner_id == author.id %}
+                        <p class='post-author'><i>written by <a href='/blog?userId={{author.id}}'>{{author.email}}</a></i></p>
+                        <hr/>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         {% endfor %}
 
     {% endif %}

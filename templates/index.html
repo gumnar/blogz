@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{page_title}}</h1>
+
+<hr/>
+
+    {% if users %}
+        <!--Display all users in list on homepage; will most likely make these links-->
+        {% for user in users %}
+        <form>
+            <ul><a href='/blog?userId={{user.id}}'>{{user.email}}</a></ul>
+            <input type='hidden' value='{{user.id}}' name='userId'/>
+        </form>
+        {% endfor %}
+    
+    {% endif %}
+
+{% endblock %}
