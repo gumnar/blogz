@@ -73,8 +73,14 @@ def signup():
                 session['user'] = email
                 flash('Hello, '+session['user'])
                 return redirect('/blog')
+            elif existing_user:
+                flash('That email has already been used!', 'error')
+                return redirect('/signup')
+            else:
+                flash('Your passwords must match!','error')
+                return redirect('/signup')
         else:
-            flash('You must enter a valid email')
+            flash('You must enter a valid email!','error')
             return redirect('/signup')
 
 
@@ -90,7 +96,7 @@ def login():
 
         if user and user.password == password:
             session['user'] = email
-            flash("Welcome back "+session['user'])
+            flash("Welcome back "+session['user'], 'message')
             return redirect('/blog')
         else:
             flash('Username/password combination invalid, please try again', 'error')
